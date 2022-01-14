@@ -4,7 +4,7 @@ import SwiftUI
 struct TodoMVCApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TodoScene()
         }
     }
 }

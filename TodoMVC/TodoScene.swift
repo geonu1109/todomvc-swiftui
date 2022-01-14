@@ -1,14 +1,14 @@
 import SwiftUI
 
-struct ContentView: View {
+struct TodoScene: View {
     var body: some View {
         Text("Hello, world!")
             .padding()
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct TodoScene_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        TodoScene()
     }
 }
