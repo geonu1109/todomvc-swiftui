@@ -1,9 +1,15 @@
 import SwiftUI
 
 struct TodoScene: View {
+    @State
+    private(set) var todos: [Todo] = [
+        .init(title: "Todo")
+    ]
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        List(self.$todos) { (todo) in
+            TodoRow(todo: todo)
+        }
     }
 }
 
