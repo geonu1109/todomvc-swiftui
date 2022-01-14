@@ -1,13 +1,11 @@
 import SwiftUI
 
 struct TodoScene: View {
-    @State
-    private(set) var todos: [Todo] = [
-        .init(title: "Todo")
-    ]
+    @StateObject
+    var viewModel: TodoViewModel = .init()
     
     var body: some View {
-        List(self.$todos) { (todo) in
+        List(self.$viewModel.todos) { (todo) in
             TodoRow(todo: todo)
         }
     }
