@@ -2,15 +2,18 @@ import Foundation
 
 @MainActor
 final class TodoViewModel: ObservableObject {
+    private let todoRepository: TodoRepository
+    
     @Published
-    var todos: [Todo] = [
-        .init(title: "Todo")
-    ]
+    var todos: [Todo]
     
     @Published
     var input: String = ""
     
-    init() {}
+    init(todoRepository: TodoRepository) {
+        self.todoRepository = todoRepository
+        self._todos = .init(initialValue: todoRepository.findAll())
+    }
     
     func pressEnter() {
         let input: String = self.input
