@@ -15,13 +15,14 @@ final class TodoViewModel: ObservableObject {
         self._todos = .init(initialValue: todoRepository.findAll())
     }
     
-    func pressEnter() {
-        let input: String = self.input
+    func submit() {
+        let input: String = self.input.trimmingCharacters(in: [" "])
         guard !input.isEmpty else {
             return
         }
         self.input = ""
         let newTodo: Todo = .init(title: input)
+        self.todoRepository.save(newTodo)
         self.todos.insert(newTodo, at: 0)
     }
 }

@@ -2,11 +2,31 @@ import SwiftUI
 
 struct TodoScene: View {
     @StateObject
-    var viewModel: TodoViewModel = .init(todoRepository: DefaultTodoRepository(userDefaultsDAO: .init(userDefaults: .standard, jsonEncoder: .init(), jsonDecoder: .init())))
+    var viewModel: TodoViewModel = .init(todoRepository: DefaultTodoRepository(userDefaultsDAO: .init(userDefaults: .standard)))
+    
+    @FocusState
+    var focusInput: Bool
     
     var body: some View {
-        List(self.$viewModel.todos) { (todo) in
-            TodoRow(todo: todo)
+        ScrollView {
+            VStack(alignment: .leading) {
+                TextField("", text: self.$viewModel.input)
+                    .frame(height: 40.0)
+                    .focused(self.$focusInput)
+                    .onSubmit {
+                        self.viewModel.submit()
+                        self.focusInput = true
+                    }
+                    .textFieldStyle(.roundedBorder)
+                ForEach(self.$viewModel.todos) { (todo) in
+                    TodoRow(todo: todo)
+                        .frame(height: 40.0)
+                }
+            }.padding()
+        }.onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                self.focusInput = true
+            }
         }
     }
 }
