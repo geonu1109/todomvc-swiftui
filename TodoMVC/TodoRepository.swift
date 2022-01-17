@@ -14,7 +14,9 @@ struct DefaultTodoRepository: TodoRepository {
     
     func findAll() -> [Todo] {
         do {
-            return try self.userDefaultsDAO.findAll()
+            return try self.userDefaultsDAO
+                .findAll()
+                .sorted { $0.creationDate > $1.creationDate }
         } catch {
             return []
         }
@@ -24,6 +26,7 @@ struct DefaultTodoRepository: TodoRepository {
         do {
             try self.userDefaultsDAO.save(todo)
         } catch {
+            print("\(#file) \(#line) error: \(error)")
             return
         }
     }
