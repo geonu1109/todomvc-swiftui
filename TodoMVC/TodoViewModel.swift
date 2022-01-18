@@ -7,8 +7,27 @@ final class TodoViewModel: ObservableObject {
     @Published
     var todos: [Todo]
     
+    var leftCountLabel: String {
+        let leftCount = self.todos.filter { !$0.isCompleted }.count
+        if leftCount == 1 {
+            return "1 item left"
+        } else {
+            return "\(leftCount) items left"
+        }
+    }
+    
+    var hasCompleted: Bool {
+        return self.todos.contains { todo in
+            return todo.isCompleted
+        }
+    }
+    
     var allCompleted: Bool {
-        return self.todos.allSatisfy { $0.isCompleted }
+        if self.todos.isEmpty {
+            return false
+        } else {
+            return self.todos.allSatisfy { $0.isCompleted }
+        }
     }
     
     @Published
@@ -47,5 +66,12 @@ final class TodoViewModel: ObservableObject {
             return
         }
         self.todos.remove(at: index)
+    }
+    
+    func deleteAllCompleted() {
+        let targets = self.todos.filter { $0.isCompleted }
+        self.todoRepository.deleteAll(targets)
+        let remains = self.todos.filter { !$0.isCompleted }
+        self.todos = remains
     }
 }

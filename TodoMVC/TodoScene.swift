@@ -42,11 +42,32 @@ struct TodoScene: View {
                             }
                         }
                 }
-            }.listStyle(.plain).navigationTitle(
+            }.listStyle(
+                .plain
+            ).navigationTitle(
                 "todos"
             ).navigationBarTitleDisplayMode(
                 .inline
-            )
+            ).toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if !self.viewModel.todos.isEmpty {
+                        Text(self.viewModel.leftCountLabel)
+                            .font(.caption)
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if self.viewModel.hasCompleted {
+                        Button {
+                            withAnimation {
+                                self.viewModel.deleteAllCompleted()
+                            }
+                        } label: {
+                            Text("Clear completed")
+                                .font(.caption)
+                        }
+                    }
+                }
+            }
         }.onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                 self.focusInput = true

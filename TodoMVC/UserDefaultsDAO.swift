@@ -52,4 +52,16 @@ struct UserDefaultsDAO {
         self.userDefaults.set(data, forKey: key)
         return true
     }
+    
+    func deleteAll<Entities: Sequence>(_ targetEntities: Entities, for key: String = .init(describing: Entities.Element.self)) throws where Entities.Element: EntityType {
+        var entities: Set<Entities.Element> = try self.findAll(for: key)
+        targetEntities.forEach { (entity) in
+            guard let index = entities.firstIndex(of: entity) else {
+                return
+            }
+            entities.remove(at: index)
+        }
+        let data: Data = try self.jsonEncoder.encode(entities)
+        self.userDefaults.set(data, forKey: key)
+    }
 }
