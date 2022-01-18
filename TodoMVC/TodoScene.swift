@@ -10,6 +10,7 @@ struct TodoScene: View {
     var body: some View {
         NavigationView {
             VStack {
+                Divider()
                 HStack {
                     Button {
                         self.viewModel.toggleAll()
@@ -30,23 +31,75 @@ struct TodoScene: View {
                         .textFieldStyle(.roundedBorder)
                 }.padding(
                     .horizontal, 20
-                ).frame(height: 40.0)
-                List(self.$viewModel.todos) { (todo) in
-                    TodoRow(todo: todo)
-                        .frame(height: 40.0)
-                        .swipeActions {
+                ).frame(height: 30.0)
+                Divider()
+                if !self.viewModel.todos.isEmpty {
+                    List(self.viewModel.filtered) { (todo) in
+                        HStack {
+                            Button {
+                                self.viewModel.toggle(todo)
+                            } label: {
+                                Image(
+                                    systemName: todo.isCompleted ? "checkmark.square" : "square"
+                                )
+                            }
+                            Text(todo.title)
+                                .strikethrough(todo.isCompleted)
+                                .foregroundColor(todo.isCompleted ? .secondary : .primary)
+                        }.frame(
+                            height: 30.0
+                        ).swipeActions {
                             Button(role: .destructive) {
                                 withAnimation {
-                                    self.viewModel.delete(todo.wrappedValue)
+                                    self.viewModel.delete(todo)
                                 }
                             } label: {
                                 Text("Delete")
                             }
                         }
+                    }.listStyle(
+                        .plain
+                    )
+                    Divider()
+                    VStack {
+                        HStack {
+                            ForEach(TodoFilter.allCases, id: \.self) { (todoFilter) in
+                                Button {
+                                    self.viewModel.filter = todoFilter
+                                } label: {
+                                    if self.viewModel.filter == todoFilter {
+                                        Text(todoFilter.rawValue)
+                                            .font(.caption)
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 5)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 5)
+                                                    .stroke(Color.secondary, lineWidth: 1)
+                                            )
+                                    } else {
+                                        Text(todoFilter.rawValue)
+                                            .font(.caption)
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 5)
+                                    }
+                                }.tint(
+                                    self.viewModel.filter == todoFilter ? .primary : .accentColor
+                                ).frame(
+                                    maxWidth: .infinity
+                                )
+                            }
+                        }
+                    }.padding(
+                        .horizontal, 20
+                    ).frame(height: 30.0)
+                    Divider()
+                        .background(Color.clear)
+                } else {
+                    Text("empty")
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-            }.listStyle(
-                .plain
-            ).navigationTitle(
+            }.navigationTitle(
                 "todos"
             ).navigationBarTitleDisplayMode(
                 .inline
@@ -63,7 +116,7 @@ struct TodoScene: View {
                     } label: {
                         Text("Clear completed")
                             .font(.caption)
-                    }.disabled(!self.viewModel.hasCompleted)
+                    }.tint(.red).disabled(!self.viewModel.hasCompleted)
                 }
             }
         }.onAppear {

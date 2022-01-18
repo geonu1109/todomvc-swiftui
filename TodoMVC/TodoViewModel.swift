@@ -7,6 +7,20 @@ final class TodoViewModel: ObservableObject {
     @Published
     var todos: [Todo]
     
+    @Published
+    var filter: TodoFilter = .all
+    
+    var filtered: [Todo] {
+        switch self.filter {
+        case .all:
+            return self.todos
+        case .active:
+            return self.todos.filter { !$0.isCompleted }
+        case .completed:
+            return self.todos.filter { $0.isCompleted }
+        }
+    }
+    
     var leftCountLabel: String {
         guard !self.todos.isEmpty else {
             return "no items"
@@ -39,6 +53,16 @@ final class TodoViewModel: ObservableObject {
     init(todoRepository: TodoRepository) {
         self.todoRepository = todoRepository
         self._todos = .init(initialValue: todoRepository.findAll())
+    }
+    
+    func toggle(_ todo: Todo) {
+        var todo = todo
+        todo.isCompleted.toggle()
+        self.todoRepository.save(todo)
+        guard let index = self.todos.firstIndex(where: { $0.id == todo.id }) else {
+            return
+        }
+        self.todos[index] = todo
     }
     
     func toggleAll() {
