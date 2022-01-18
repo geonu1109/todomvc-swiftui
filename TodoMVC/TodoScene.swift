@@ -33,7 +33,7 @@ struct TodoScene: View {
                     .horizontal, 20
                 ).frame(height: 30.0)
                 Divider()
-                if !self.viewModel.todos.isEmpty {
+                if !self.viewModel.filtered.isEmpty {
                     List(self.viewModel.filtered) { (todo) in
                         HStack {
                             Button {
@@ -60,6 +60,12 @@ struct TodoScene: View {
                     }.listStyle(
                         .plain
                     )
+                } else {
+                    Text(self.viewModel.todos.isEmpty ? "empty" : "filtered")
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                if !self.viewModel.todos.isEmpty {
                     Divider()
                     VStack {
                         HStack {
@@ -94,10 +100,6 @@ struct TodoScene: View {
                     ).frame(height: 30.0)
                     Divider()
                         .background(Color.clear)
-                } else {
-                    Text("empty")
-                        .foregroundColor(.secondary)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }.navigationTitle(
                 "todos"
@@ -106,6 +108,7 @@ struct TodoScene: View {
             ).toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text(self.viewModel.leftCountLabel)
+                        .foregroundColor(.secondary)
                         .font(.caption)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -116,7 +119,7 @@ struct TodoScene: View {
                     } label: {
                         Text("Clear completed")
                             .font(.caption)
-                    }.tint(.red).disabled(!self.viewModel.hasCompleted)
+                    }.disabled(!self.viewModel.hasCompleted)
                 }
             }
         }.onAppear {
