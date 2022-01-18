@@ -8,9 +8,10 @@ struct TodoScene: View {
     var focusInput: Bool
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading) {
+        NavigationView {
+            VStack {
                 TextField("", text: self.$viewModel.input)
+                    .padding()
                     .frame(height: 40.0)
                     .focused(self.$focusInput)
                     .onSubmit {
@@ -18,11 +19,24 @@ struct TodoScene: View {
                         self.focusInput = true
                     }
                     .textFieldStyle(.roundedBorder)
-                ForEach(self.$viewModel.todos) { (todo) in
+                List(self.$viewModel.todos) { (todo) in
                     TodoRow(todo: todo)
                         .frame(height: 40.0)
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                withAnimation {
+                                    self.viewModel.delete(todo.wrappedValue)
+                                }
+                            } label: {
+                                Text("Delete")
+                            }
+                        }
                 }
-            }.padding()
+            }.listStyle(.plain).navigationTitle(
+                "todos"
+            ).navigationBarTitleDisplayMode(
+                .inline
+            )
         }.onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                 self.focusInput = true

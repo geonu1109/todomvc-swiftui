@@ -25,4 +25,12 @@ final class TodoViewModel: ObservableObject {
         self.todoRepository.save(newTodo)
         self.todos.insert(newTodo, at: 0)
     }
+    
+    func delete(_ todo: Todo) {
+        self.todoRepository.delete(todo)
+        guard let index = self.todos.firstIndex(of: todo) else {
+            return
+        }
+        self.todos.remove(at: index)
+    }
 }

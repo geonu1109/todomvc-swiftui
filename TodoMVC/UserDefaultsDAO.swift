@@ -1,7 +1,7 @@
 import Foundation
 
 struct UserDefaultsDAO {
-    typealias ObjectType = Codable & Identifiable & Hashable
+    typealias EntityType = Codable & Identifiable & Hashable
     
     private let userDefaults: UserDefaults
     private let jsonEncoder: JSONEncoder = .init()
@@ -11,21 +11,33 @@ struct UserDefaultsDAO {
         self.userDefaults = userDefaults
     }
     
-    func findAll<Object: ObjectType>(for key: String = .init(describing: Object.self)) throws -> Set<Object> {
+    func findAll<Entity: EntityType>(for key: String = .init(describing: Entity.self)) throws -> Set<Entity> {
         guard let data: Data = self.userDefaults.data(forKey: key) else {
             return []
         }
-        let objects: Set<Object> = try self.jsonDecoder.decode(Set<Object>.self, from: data)
-        return objects
+        let entities: Set<Entity> = try self.jsonDecoder.decode(Set<Entity>.self, from: data)
+        return entities
     }
     
-    func save<Object: ObjectType>(_ object: Object, for key: String = .init(describing: Object.self)) throws {
-        var objects: Set<Object> = try self.findAll(for: key)
-        if let object = objects.first(where: { $0.id == object.id }) {
-            objects.remove(object)
+    func save<Entity: EntityType>(_ entity: Entity, for key: String = .init(describing: Entity.self)) throws {
+        var entities: Set<Entity> = try self.findAll(for: key)
+        if let entity = entities.first(where: { $0.id == entity.id }) {
+            entities.remove(entity)
         }
-        objects.insert(object)
-        let data: Data = try self.jsonEncoder.encode(objects)
+        entities.insert(entity)
+        let data: Data = try self.jsonEncoder.encode(entities)
         self.userDefaults.set(data, forKey: key)
+    }
+    
+    @discardableResult
+    func delete<Entity: EntityType>(_ entity: Entity, for key: String = .init(describing: Entity.self)) throws -> Bool {
+        var entities: Set<Entity> = try self.findAll(for: key)
+        guard let index = entities.firstIndex(of: entity) else {
+            return false
+        }
+        entities.remove(at: index)
+        let data: Data = try self.jsonEncoder.encode(entities)
+        self.userDefaults.set(data, forKey: key)
+        return true
     }
 }

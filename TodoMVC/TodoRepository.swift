@@ -3,6 +3,7 @@ import Foundation
 protocol TodoRepository {
     func findAll() -> [Todo]
     func save(_ todo: Todo)
+    func delete(_ todo: Todo)
 }
 
 struct DefaultTodoRepository: TodoRepository {
@@ -26,7 +27,14 @@ struct DefaultTodoRepository: TodoRepository {
         do {
             try self.userDefaultsDAO.save(todo)
         } catch {
-            print("\(#file) \(#line) error: \(error)")
+            return
+        }
+    }
+    
+    func delete(_ todo: Todo) {
+        do {
+            try self.userDefaultsDAO.delete(todo)
+        } catch {
             return
         }
     }

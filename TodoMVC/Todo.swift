@@ -1,6 +1,6 @@
 import Foundation
 
-struct Todo: Identifiable, Codable, Hashable {
+struct Todo: Identifiable, Codable, Hashable, Equatable {
     let id: UUID
     let creationDate: Date
     var title: String
