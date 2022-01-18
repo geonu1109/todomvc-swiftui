@@ -8,6 +8,9 @@ final class TodoViewModel: ObservableObject {
     var todos: [Todo]
     
     var leftCountLabel: String {
+        guard !self.todos.isEmpty else {
+            return "no items"
+        }
         let leftCount = self.todos.filter { !$0.isCompleted }.count
         if leftCount == 1 {
             return "1 item left"

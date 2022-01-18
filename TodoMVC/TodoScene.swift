@@ -17,7 +17,9 @@ struct TodoScene: View {
                         Image(
                             systemName: self.viewModel.allCompleted ? "checkmark.square" : "square"
                         ).imageScale(.large)
-                    }.tint(.primary)
+                    }.tint(
+                        .primary
+                    ).disabled(self.viewModel.todos.isEmpty)
                     Spacer()
                     TextField("", text: self.$viewModel.input)
                         .focused(self.$focusInput)
@@ -50,22 +52,18 @@ struct TodoScene: View {
                 .inline
             ).toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    if !self.viewModel.todos.isEmpty {
-                        Text(self.viewModel.leftCountLabel)
-                            .font(.caption)
-                    }
+                    Text(self.viewModel.leftCountLabel)
+                        .font(.caption)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    if self.viewModel.hasCompleted {
-                        Button {
-                            withAnimation {
-                                self.viewModel.deleteAllCompleted()
-                            }
-                        } label: {
-                            Text("Clear completed")
-                                .font(.caption)
+                    Button {
+                        withAnimation {
+                            self.viewModel.deleteAllCompleted()
                         }
-                    }
+                    } label: {
+                        Text("Clear completed")
+                            .font(.caption)
+                    }.disabled(!self.viewModel.hasCompleted)
                 }
             }
         }.onAppear {
