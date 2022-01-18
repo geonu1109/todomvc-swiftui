@@ -29,6 +29,18 @@ struct UserDefaultsDAO {
         self.userDefaults.set(data, forKey: key)
     }
     
+    func saveAll<Entities: Sequence>(_ newEntities: Entities, for key: String = .init(describing: Entities.Element.self)) throws where Entities.Element: EntityType {
+        var entities: Set<Entities.Element> = try self.findAll(for: key)
+        newEntities.forEach { (entity) in
+            if let entity = entities.first(where: { $0.id == entity.id }) {
+                entities.remove(entity)
+            }
+            entities.insert(entity)
+        }
+        let data: Data = try self.jsonEncoder.encode(entities)
+        self.userDefaults.set(data, forKey: key)
+    }
+    
     @discardableResult
     func delete<Entity: EntityType>(_ entity: Entity, for key: String = .init(describing: Entity.self)) throws -> Bool {
         var entities: Set<Entity> = try self.findAll(for: key)

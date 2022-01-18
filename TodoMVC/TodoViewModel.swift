@@ -7,12 +7,27 @@ final class TodoViewModel: ObservableObject {
     @Published
     var todos: [Todo]
     
+    var allCompleted: Bool {
+        return self.todos.allSatisfy { $0.isCompleted }
+    }
+    
     @Published
     var input: String = ""
     
     init(todoRepository: TodoRepository) {
         self.todoRepository = todoRepository
         self._todos = .init(initialValue: todoRepository.findAll())
+    }
+    
+    func toggleAll() {
+        let allCompleted = self.allCompleted
+        let todos: [Todo] = self.todos.map {
+            var todo = $0
+            todo.isCompleted = !allCompleted
+            return todo
+        }
+        self.todoRepository.saveAll(todos)
+        self.todos = todos
     }
     
     func submit() {

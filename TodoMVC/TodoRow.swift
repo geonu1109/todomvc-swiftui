@@ -9,7 +9,9 @@ struct TodoRow: View {
             Button {
                 self.todo.isCompleted.toggle()
             } label: {
-                Image(systemName: todo.isCompleted ? "checkmark.square" : "square")
+                Image(
+                    systemName: todo.isCompleted ? "checkmark.square" : "square"
+                )
             }
             Text(self.todo.title)
                 .strikethrough(self.todo.isCompleted)
